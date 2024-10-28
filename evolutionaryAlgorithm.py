@@ -1,6 +1,7 @@
 import numpy as np
 import random
 import copy
+from matplotlib import pyplot as plt
 from cec2017.functions import f2, f13
 
 
@@ -9,26 +10,26 @@ class Individual:
     def __init__(self, length, function):
         self.genes = np.random.uniform(-Individual.LIMITATION, Individual.LIMITATION, size=length)
         self.function = function
-    
+
     def evaluate(self):
         return self.function(self.genes)
-    
+
     def mutation(self, sigma):
         self.genes += np.random.normal(0, sigma, size=self.genes.shape)
         self.genes = np.clip(self.genes, -Individual.LIMITATION, Individual.LIMITATION)
-        
-            
+
+
 
 class Population:
     def __init__(self, size, function, individuals=None):
         if individuals is None:
-            self.individuals = [Individual(10, function) for _ in range(size)]
+            self.individuals = [Individual(10, function) for i in range(size)]
         else:
             self.individuals = individuals
         self.size = size
         self.function = function
-    
-    
+
+
     def evaluatePopulation(self):
         evaluation = np.zeros(self.size)
         for i, ind in enumerate(self.individuals):
@@ -39,7 +40,7 @@ class Population:
         theBestIndex = np.argmin(evaluation)
         theBest = self.individuals[theBestIndex]
         return theBest
-    
+
     def reproduction(self): #tournament selection
         Rpopulation = []
         for i in range(self.size):
@@ -58,6 +59,7 @@ class Population:
         self.individuals = newPopulation.individuals
 
 def evolutionaryAlgorithm(population: Population, sigma: float, tMax: int):
+    f_values = []
     evaluation = population.evaluatePopulation()
     theBest = population.findTheBest(evaluation)
     theBestValue = theBest.evaluate()
@@ -70,7 +72,8 @@ def evolutionaryAlgorithm(population: Population, sigma: float, tMax: int):
             theBest = theBestCandidate
             theBestValue = theBestCandidate.evaluate()
         population.succsession(Mpopulation)
-    return theBest.genes, theBestValue
+        f_values.append(theBestValue)
+    return theBest.genes, theBestValue, f_values
 
 def main():
     BUDGET = 10000
@@ -79,8 +82,14 @@ def main():
     function = f2
     initialPopulation = Population(SIZE, function)
     tMax = int(BUDGET/SIZE)
-    print(evolutionaryAlgorithm(initialPopulation, SIGMA, tMax))
-
+    theBest, theBestValue, f_values = evolutionaryAlgorithm(initialPopulation, SIGMA, tMax)
+    print(theBest)
+    print(theBestValue)
+    plt.plot(f_values)
+    plt.xlabel("Iterations")
+    plt.ylabel("Values of Function")
+    plt.yscale('log')
+    plt.show()
 
 if __name__ == "__main__":
     main()
