@@ -2,7 +2,7 @@ import numpy as np
 import random
 import copy
 from matplotlib import pyplot as plt
-from cec2017.functions import f2, f13
+from cec2017.functions import f2, f13, f4
 
 
 class Individual:
@@ -82,10 +82,13 @@ def main():
     function = f2
     initialPopulation = Population(SIZE, function)
     tMax = int(BUDGET/SIZE)
-    theBest, theBestValue, f_values = evolutionaryAlgorithm(initialPopulation, SIGMA, tMax)
-    print(theBest)
-    print(theBestValue)
-    plt.plot(f_values)
+    all_values = []
+    for i in range(25):
+        _, _, f_values = evolutionaryAlgorithm(initialPopulation, SIGMA, tMax)
+        all_values.append(f_values)
+    avg_values = np.mean(all_values, axis=0)
+    print(avg_values[-1])
+    plt.plot(avg_values)
     plt.xlabel("Iterations")
     plt.ylabel("Values of Function")
     plt.yscale('log')
