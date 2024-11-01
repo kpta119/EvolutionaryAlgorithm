@@ -77,23 +77,23 @@ def evolutionaryAlgorithm(population: Population, sigma: float, tMax: int):
 
 def main():
     BUDGET = 10000
-    SIZE = 8
-    SIGMA = 0.5
-    function = f2
+    SIZE = 12
+    SIGMA = 1
+    function = f13
     initialPopulation = Population(SIZE, function)
     tMax = int(BUDGET/SIZE)
     all_values = []
-    for i in range(30):
+    for i in range(100):
         _, _, f_values = evolutionaryAlgorithm(initialPopulation, SIGMA, tMax)
         all_values.append(f_values)
     avg_values = np.mean(all_values, axis=0)
-    print(np.mean(all_values, axis=0)[-1])
-    print(np.max(all_values,axis=0)[-1])
     print(np.min(all_values,axis=0)[-1])
+    print(np.max(all_values,axis=0)[-1])
+    print(np.mean(all_values, axis=0)[-1])
     print(np.std(all_values,axis=0)[-1])
     plt.plot(avg_values)
     plt.xlabel("Iterations")
-    plt.ylabel("Average values of Function(25 starts)")
+    plt.ylabel(f"Average values of function {function.__name__} (100 starts)")
     plt.yscale('log')
     plt.show()
 
