@@ -2,7 +2,7 @@ import numpy as np
 import random
 import copy
 from matplotlib import pyplot as plt
-from cec2017.functions import f2, f13, f4
+from cec2017.functions import f2, f13
 
 
 class Individual:
@@ -66,7 +66,7 @@ def evolutionaryAlgorithm(population: Population, sigma: float, tMax: int):
     for i in range(tMax):
         Rpopulation = population.reproduction()
         Mpopulation = Rpopulation.mutationPopulation(sigma)
-        evaluation2 = Mpopulation.evaluatePopulation() #array ocenionych osobników
+        evaluation2 = Mpopulation.evaluatePopulation()   #array of assessed individuals
         theBestCandidate = Mpopulation.findTheBest(evaluation2)
         if theBestCandidate.evaluate() <= theBestValue:
             theBest = theBestCandidate
@@ -77,20 +77,23 @@ def evolutionaryAlgorithm(population: Population, sigma: float, tMax: int):
 
 def main():
     BUDGET = 10000
-    SIZE = 10
+    SIZE = 8
     SIGMA = 0.5
     function = f2
     initialPopulation = Population(SIZE, function)
     tMax = int(BUDGET/SIZE)
     all_values = []
-    for i in range(25):
+    for i in range(30):
         _, _, f_values = evolutionaryAlgorithm(initialPopulation, SIGMA, tMax)
         all_values.append(f_values)
     avg_values = np.mean(all_values, axis=0)
-    print(avg_values[-1])
+    print(np.mean(all_values, axis=0)[-1])
+    print(np.max(all_values,axis=0)[-1])
+    print(np.min(all_values,axis=0)[-1])
+    print(np.std(all_values,axis=0)[-1])
     plt.plot(avg_values)
     plt.xlabel("Iterations")
-    plt.ylabel("Values of Function")
+    plt.ylabel("Average values of Function(25 starts)")
     plt.yscale('log')
     plt.show()
 
