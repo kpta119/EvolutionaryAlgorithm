@@ -58,6 +58,8 @@ class Population:
     def succsession(self, newPopulation):
         self.individuals = newPopulation.individuals
 
+
+
 def evolutionaryAlgorithm(population: Population, sigma: float, tMax: int):
     f_values = []
     evaluation = population.evaluatePopulation()
@@ -75,27 +77,29 @@ def evolutionaryAlgorithm(population: Population, sigma: float, tMax: int):
         f_values.append(theBestValue)
     return theBest.genes, theBestValue, f_values
 
-def main():
-    BUDGET = 10000
-    SIZE = 12
-    SIGMA = 1
-    function = f13
-    initialPopulation = Population(SIZE, function)
-    tMax = int(BUDGET/SIZE)
+
+def generatePlot(initialPopulation, sigma, tMax, function):
     all_values = []
     for i in range(100):
-        _, _, f_values = evolutionaryAlgorithm(initialPopulation, SIGMA, tMax)
+        _, _, f_values = evolutionaryAlgorithm(initialPopulation, sigma, tMax)
         all_values.append(f_values)
     avg_values = np.mean(all_values, axis=0)
-    print(np.min(all_values,axis=0)[-1])
-    print(np.max(all_values,axis=0)[-1])
-    print(np.mean(all_values, axis=0)[-1])
-    print(np.std(all_values,axis=0)[-1])
     plt.plot(avg_values)
     plt.xlabel("Iterations")
     plt.ylabel(f"Average values of function {function.__name__} (100 starts)")
     plt.yscale('log')
     plt.show()
+
+
+def main():
+    BUDGET = 10000
+    SIZE = 6
+    SIGMA = 0.5
+    function = f2
+    initialPopulation = Population(SIZE, function)
+    tMax = int(BUDGET/SIZE)
+    generatePlot(initialPopulation, SIGMA, tMax, function)
+
 
 if __name__ == "__main__":
     main()
