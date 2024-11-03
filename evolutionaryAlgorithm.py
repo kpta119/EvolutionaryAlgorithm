@@ -61,10 +61,10 @@ class Population:
 
 
 def evolutionaryAlgorithm(population: Population, sigma: float, tMax: int):
-    f_values = []
     evaluation = population.evaluatePopulation()
     theBest = population.findTheBest(evaluation)
     theBestValue = theBest.evaluate()
+    f_values = [theBestValue]
     for i in range(tMax):
         Rpopulation = population.reproduction()
         Mpopulation = Rpopulation.mutationPopulation(sigma)
