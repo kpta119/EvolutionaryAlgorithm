@@ -3,25 +3,32 @@ import random
 import copy
 from matplotlib import pyplot as plt
 from cec2017.functions import f2, f13
+from typing import Callable, List, Tuple
+from dataclasses import dataclass
 
+@dataclass(frozen=True)
+class Constants:
+    LIMITATION: int = 100
+    BUDGET: int = 10000
+    SIZE: int = 6
+    SIGMA: float = 0.5
 
 class Individual:
-    LIMITATION = 100
-    def __init__(self, length, function):
-        self.genes = np.random.uniform(-Individual.LIMITATION, Individual.LIMITATION, size=length)
+    def __init__(self, length: int, function: Callable[[np.ndarray], float]):
+        self.genes = np.random.uniform(-Constants.LIMITATION, Constants.LIMITATION, size=length)
         self.function = function
 
-    def evaluate(self):
+    def evaluate(self) -> float:
         return self.function(self.genes)
 
-    def mutation(self, sigma):
+    def mutation(self, sigma: float) -> None:
         self.genes += np.random.normal(0, sigma, size=self.genes.shape)
-        self.genes = np.clip(self.genes, -Individual.LIMITATION, Individual.LIMITATION)
+        self.genes = np.clip(self.genes, -Constants.LIMITATION, Constants.LIMITATION)
 
 
 
 class Population:
-    def __init__(self, size, function, individuals=None):
+    def __init__(self, size: int, function: Callable[[np.ndarray], float], individuals: List[Individual] = None):
         if individuals is None:
             self.individuals = [Individual(10, function) for i in range(size)]
         else:
@@ -30,18 +37,18 @@ class Population:
         self.function = function
 
 
-    def evaluatePopulation(self):
+    def evaluatePopulation(self) -> np.ndarray:
         evaluation = np.zeros(self.size)
         for i, ind in enumerate(self.individuals):
             evaluation[i] = ind.evaluate()
         return evaluation
 
-    def findTheBest(self, evaluation) -> Individual:
+    def findTheBest(self, evaluation: np.ndarray) -> Individual:
         theBestIndex = np.argmin(evaluation)
         theBest = self.individuals[theBestIndex]
         return theBest
 
-    def reproduction(self): #tournament selection
+    def reproduction(self) -> "Population": #tournament selection
         Rpopulation = []
         for i in range(self.size):
             ind1 = self.individuals[random.randint(0,self.size-1)]
@@ -50,17 +57,17 @@ class Population:
             Rpopulation.append(copy.deepcopy(win))
         return Population(self.size, self.function, Rpopulation)
 
-    def mutationPopulation(self, sigma):
+    def mutationPopulation(self, sigma: float) -> "Population":
         for ind in self.individuals:
             ind.mutation(sigma)
         return self
 
-    def succsession(self, newPopulation):
+    def succsession(self, newPopulation: "Population") -> None:
         self.individuals = newPopulation.individuals
 
 
 
-def evolutionaryAlgorithm(population: Population, sigma: float, tMax: int):
+def evolutionaryAlgorithm(population: Population, sigma: float, tMax: int) -> Tuple[np.ndarray, float, List[float]]:
     evaluation = population.evaluatePopulation()
     theBest = population.findTheBest(evaluation)
     theBestValue = theBest.evaluate()
@@ -78,7 +85,7 @@ def evolutionaryAlgorithm(population: Population, sigma: float, tMax: int):
     return theBest.genes, theBestValue, f_values
 
 
-def generatePlot(initialPopulation, sigma, tMax, function):
+def generatePlot(initialPopulation: Population, sigma: float, tMax: int, function: Callable) -> None:
     all_values = []
     for i in range(100):
         _, _, f_values = evolutionaryAlgorithm(initialPopulation, sigma, tMax)
@@ -91,14 +98,11 @@ def generatePlot(initialPopulation, sigma, tMax, function):
     plt.show()
 
 
-def main():
-    BUDGET = 10000
-    SIZE = 6
-    SIGMA = 0.5
+def main() -> None:
     function = f2
-    initialPopulation = Population(SIZE, function)
-    tMax = int(BUDGET/SIZE)
-    generatePlot(initialPopulation, SIGMA, tMax, function)
+    initialPopulation = Population(Constants.SIZE, function)
+    tMax = int(Constants.BUDGET / Constants.SIZE)
+    generatePlot(initialPopulation, Constants.SIGMA, tMax, function)
 
 
 if __name__ == "__main__":
