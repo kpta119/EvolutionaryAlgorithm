@@ -18,8 +18,8 @@ This project implements an evolutionary algorithm to optimize functions from the
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/yourusername/evolutionary-algorithm.git
-    cd evolutionary-algorithm
+    git clone https://github.com/kpta119/EvolutionaryAlgorithm.git
+    cd EvolutionaryAlgorithm
     ```
 
 2. Install the required packages:
